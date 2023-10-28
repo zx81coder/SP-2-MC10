@@ -1,0 +1,8 @@
+   0>REM 
+MC10-2-SPtap converts .C10 fileson a PC to TAP-files for the    SP-2-MC10 emulat
+or.             This version goes with          SP-2-MC10 v1.12     RUN to start
+                   
+  10 CLEAR 29999: PRINT "load a block at 32768": POKE 32768,0
+  12 IF NOT PEEK 32768 THEN GO TO 12
+  80 LET a=USR 3e4
+  90 INPUT "Enter name:"; LINE a$: SAVE a$CODE 49148,a+4

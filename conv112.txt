@@ -1,0 +1,39 @@
+
+	org	30000
+
+	ld	de,49152
+	ld	hl,32768
+
+	call	header		; find name
+	ld	bc,13
+	add	hl,bc
+	ld	b,(hl)
+	inc	hl
+	ld	c,(hl)
+	ld	(49150),bc	; length in data or load
+	inc	hl
+
+nwcode	call	header
+	djnz	exit
+	ldir
+	jr	nwcode
+
+exit	ex	de,hl
+	ld	de,#c000
+	and	a
+	sbc	hl,de
+	ld	(49148),hl	; real length
+	ld	b,h
+	ld	l,c
+	ret
+
+header	inc	hl
+	ld	a,(hl)
+	cp	#55
+	jr	z,header
+	inc	hl
+	ld	b,(hl)
+	inc	hl
+	ld	c,(hl)
+	inc	hl
+	ret

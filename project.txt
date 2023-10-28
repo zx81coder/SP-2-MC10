@@ -1,0 +1,80 @@
+PROJECT : A TRS8 MC10 emulator on the ZX Spectrum
+
+My first computer was not a ZX Spectrum but a TRS80 MC10.
+
+A few years ago I coded my very first machinecode game for that computer.
+After porting my SHOGUN game from the ZX Spectrum to the ZX81 and 
+the Videopac gameconsole I coded this game on the TRS80 MC10.
+
+Like my ZX81 emulator from 1997 and my Videopac emulator from 2000
+it seems almost impossible to make it a decent emulator.
+
+The following problems might occur:
+- speed
+The Motorola MC6803 has a clockspeed of .79Mhz but the opcodes are faster
+than a Z80. Moreover you need to translate the opcodes to run as Z80-code.
+
+- memory
+The MC10 has a whole different memory layout from any Z80 computer.
+#0000 	#00FF	zeropage RAM memory
+#4000 	#nnnn	RAM memory (depending on RAMpack how much RAM) starting with screen
+#E000	#FFFF ROM memory
+
+On a ZX Spectrum the memory is :
+#0000	#3FFF	ROM
+#4000	#5AFF	Screen
+#5B00	#5CCB	Systemvariables
+#5CCC	#FFFF	RAM for BASIC or machinecode
+
+A large part of the code can therefore not run at its own addressses. 
+To make a working emulator the MC10-memory is stored at the following addressses.
+
+#8000	zeropage
+#C000	RAM
+#BFFF	keyboarddata
+#E000	ROM
+
+RAM is therefore dislocated from the real address, but each address in both ROM and RAM can be found
+by setting bit 7 of the address. That is how the emulator works.
+
+- the coloursettings:
+I have to make a bit different settings
+TRS80       black - green       - beige         - blue 
+ZX Spectrum black - green       - bright yellow - blue 
+
+TRS80       red   - white       - cyan     - magenta - orange
+ZX Spectrum red   - brightwhite - cyan     - magenta - yellow
+
+- sound
+This is the first emulator I write with colour and sound.
+I made a soundroutine that is not perfect, but it works
+
+- screen
+A character on the screen is 8x12. 2 characters with different colours 
+can give colourclash. To solve this I made each character 8x8.
+
+- Reading keyboard
+Keyboard is different from ZX Spectrum
+The keyboard is scanned each time a value is written to #0002.
+The emulator must scan the keyboard then. The keyboard on the MC10 has 48 keys,
+the ZX Spectrum has 40 keys. 
+
+
+- flags
+The MC10 has flags that are not on the Z80.
+The overflowflag is emulated by checking 2 flags.
+
+
+; 5ccc 5ff5	BASIC code
+; 5ff6 7fff	virtual tape memory		8K+
+; 8000 80ff	zero page			256 bytes
+; 8100 afff	emulator translated ROM		16K- 8K emulator, 8K-room for translated ROM
+; b000 b7ff	characterset 
+; b800 b8ff	attributetable
+; b900 bffe	free translated ROM part	free
+; bfff		keyboard key storage		1 byte
+; c000 dfff	8K RAM		
+; e000 ffff	8K ROM
+
+
+
